@@ -18,8 +18,10 @@ function getCliPath(): string {
     platform = "linux";
   }
 
-  // Detect architecture from Zotero's runtime info
-  const abi = Services.appinfo.XPCOMABI || "";
+  // Zotero.arch is the supported platform API in current Zotero versions.
+  const abi = String(
+    (Zotero as any).arch || Services.appinfo.XPCOMABI || "",
+  ).toLowerCase();
   let arch: string;
   if (abi.startsWith("aarch64") || abi.startsWith("arm64")) {
     arch = "arm64";

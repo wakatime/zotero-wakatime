@@ -51,7 +51,7 @@ function registerReaderEventListeners(): void {
   );
 
   // Attach to any already-open readers
-  for (const reader of Zotero.Reader._readers) {
+  for (const reader of getOpenReaders()) {
     if ((reader as any).tabID) {
       attachListenersToReader((reader as any).tabID as string);
     }
@@ -95,9 +95,7 @@ async function attachListenersToReader(tabId: string): Promise<void> {
     return;
   }
 
-  // Access the inner pdf.js iframe where user interactions actually happen
-  const innerWin = (reader._internalReader as any)?._primaryView
-    ?._iframeWindow as Window | undefined;
+  const innerWin = getReaderIframeWindow(reader);
   if (!innerWin || !isWindowAlive(innerWin)) {
     Zotero.debug(
       `[zotero-wakatime] reader-events: inner iframeWindow not available for tab ${tabId}`,
@@ -117,6 +115,20 @@ async function attachListenersToReader(tabId: string): Promise<void> {
   activeListeners.set(tabId, { iframeWin: innerWin, handler });
   Zotero.debug(
     `[zotero-wakatime] reader-events: attached listeners to inner iframe for tab ${tabId}`,
+  );
+}
+
+function getOpenReaders(): any[] {
+  const readers = (Zotero.Reader as any)._readers;
+  if (!readers) return [];
+  return Array.isArray(readers) ? readers : Object.values(readers);
+}
+
+function getReaderIframeWindow(reader: any): Window | undefined {
+  return (
+    reader._internalReader?._primaryView?._iframeWindow ||
+    reader._internalReader?._iframeWindow ||
+    reader._iframeWindow
   );
 }
 

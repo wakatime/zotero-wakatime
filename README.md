@@ -11,7 +11,7 @@ Note: This plugin is in early beta. Please report any issues or feedback when us
 
 | Dependency   | Required version                           |
 | ------------ | ------------------------------------------ |
-| Zotero       | **7.x**                                    |
+| Zotero       | **7.x - 9.x**                              |
 | wakatime-cli | latest (auto-detected from `~/.wakatime/`) |
 
 > Zotero 6 and earlier are **not** supported.
