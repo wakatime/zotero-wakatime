@@ -112,7 +112,7 @@ Turn on **Enable debug logging** in preferences. Heartbeat attempts and CLI exit
 
 ### Filing a bug report
 
-Please open an issue at <https://github.com/Rosayxy/zotero-wakatime/issues> and include:
+Please open an issue at <https://github.com/wakatime/zotero-wakatime/issues> and include:
 
 - Zotero version (`Help → About Zotero`)
 - Operating system and architecture
