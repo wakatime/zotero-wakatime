@@ -91,6 +91,7 @@ async function onMainWindowUnload(_win: Window): Promise<void> {
 function onShutdown(): void {
   ztoolkit.log("onShutdown() begin");
   ztoolkit.unregisterAll();
+  unregisterPrefs();
   unregisterReaderEventListeners();
   unregisterActivityListener();
   resetHeartbeatState();
@@ -119,13 +120,32 @@ async function onPrefsEvent(type: string, data: { [key: string]: any }) {
   }
 }
 
+// Stable ID for the preferences pane. Using a fixed ID (instead of letting
+// Zotero generate a random one) lets us unregister it reliably and keeps the
+// registration idempotent.
+const PREFS_PANE_ID = "zotero-wakatime-prefpane";
+
 function registerPrefs() {
+  // If a pane from a previous install is still registered (e.g. the user
+  // reinstalled from file, which doesn't always run the plugin shutdown path),
+  // remove it first — otherwise the preferences sidebar ends up with multiple
+  // "WakaTime" entries.
+  unregisterPrefs();
   Zotero.PreferencePanes.register({
     pluginID: addon.data.config.addonID,
+    id: PREFS_PANE_ID,
     src: rootURI + "content/preferences.xhtml",
     label: getString("prefs-title"),
     image: `chrome://${addon.data.config.addonRef}/content/icons/favicon.png`,
   });
+}
+
+function unregisterPrefs() {
+  try {
+    Zotero.PreferencePanes.unregister(PREFS_PANE_ID);
+  } catch (error) {
+    ztoolkit.log("unregisterPrefs() failed:", error);
+  }
 }
 
 export default {

@@ -95,7 +95,7 @@ async function attachListenersToReader(tabId: string): Promise<void> {
     return;
   }
 
-  const innerWin = getReaderIframeWindow(reader);
+  const innerWin = await getReaderIframeWindow(reader);
   if (!innerWin || !isWindowAlive(innerWin)) {
     Zotero.debug(
       `[zotero-wakatime] reader-events: inner iframeWindow not available for tab ${tabId}`,
@@ -124,7 +124,22 @@ function getOpenReaders(): any[] {
   return Array.isArray(readers) ? readers : Object.values(readers);
 }
 
-function getReaderIframeWindow(reader: any): Window | undefined {
+async function getReaderIframeWindow(reader: any): Promise<Window | undefined> {
+  // Zotero 10 renders the PDF/EPUB content in a nested iframe exposed as
+  // `_internalReader._primaryView._iframeWindow`. That field only becomes
+  // available after the primary view's own `initializedPromise` resolves,
+  // which happens *after* the reader's `_initPromise`. Wait for it so we
+  // don't fall back to the outer reader shell (which never receives DOM
+  // events from inside the nested viewer iframe).
+  const primaryView = reader._internalReader?._primaryView;
+  if (primaryView?.initializedPromise) {
+    try {
+      await primaryView.initializedPromise;
+    } catch {
+      // View failed to initialize — fall through to the shell fallback below.
+    }
+  }
+
   return (
     reader._internalReader?._primaryView?._iframeWindow ||
     reader._internalReader?._iframeWindow ||
