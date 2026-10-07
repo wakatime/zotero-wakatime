@@ -41,4 +41,11 @@ jobs:
     steps:
       - name: Setup JS
         uses: zotero-plugin-dev/workflows/setup-js@main
+      - name: Install wakatime-cli
+        run: |
+          mkdir -p "$HOME/.wakatime"
+          curl -fsSL -o /tmp/wakatime-cli.zip \
+            https://github.com/wakatime/wakatime-cli/releases/latest/download/wakatime-cli-linux-amd64.zip
+          unzip -o /tmp/wakatime-cli.zip -d "$HOME/.wakatime"
+          chmod +x "$HOME/.wakatime/wakatime-cli-linux-amd64"
       - run: npm run test
