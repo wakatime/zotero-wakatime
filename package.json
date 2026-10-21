@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rosayxy/zotero-wakatime.git"
+    "url": "git+https://github.com/wakatime/zotero-wakatime.git"
   },
   "author": "rosayxy",
   "bugs": {
-    "url": "https://github.com/Rosayxy/zotero-wakatime/issues"
+    "url": "https://github.com/wakatime/zotero-wakatime/issues"
   },
-  "homepage": "https://github.com/Rosayxy/zotero-wakatime#readme",
+  "homepage": "https://github.com/wakatime/zotero-wakatime#readme",
   "license": "MIT",
   "scripts": {
     "start": "zotero-plugin serve",
