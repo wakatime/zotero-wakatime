@@ -11,6 +11,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -18,12 +19,24 @@ jobs:
         with:
           node-version: 22
 
+      # `zotero-plugin release` does not bump the version in CI: it publishes
+      # whatever package.json says, so the tag has to match it.
+      - name: Verify tag matches package.json
+        run: |
+          expected="zotero-wakatime-v$(node -p 'require("./package.json").version')"
+          if [ "$expected" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match $expected" >&2
+            exit 1
+          fi
+
       - run: npm install
 
       - run: npm run build
 
-      - name: Upload xpi to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: .scaffold/build/*.xpi
-          generate_release_notes: true
+      # Creates the `zotero-wakatime-v<version>` release with the xpi and
+      # update.json, then creates/updates the `release` tag hosting
+      # update.json, which is what manifest.json's update_url points at.
+      - name: Publish release
+        run: npx zotero-plugin release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
