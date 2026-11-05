@@ -32,8 +32,10 @@ describe("startup", function () {
     assert.isNotEmpty(Zotero[config.addonInstance]);
   });
 
-  it("should finish initialization on Zotero 10", function () {
-    assert.match(Zotero.version, /^10\./);
+  it("should finish initialization on Zotero 10 or newer", function () {
+    // CI runs the current Zotero beta, which keeps moving past 10, so assert
+    // the minimum supported version instead of one exact major.
+    assert.isAtLeast(Number.parseInt(Zotero.version, 10), 10);
     assert.isTrue(Zotero[config.addonInstance].data.initialized);
     assert.isTrue(Zotero[config.addonInstance].data.alive);
   });
