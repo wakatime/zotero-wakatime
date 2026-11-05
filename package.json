@@ -1,7 +1,7 @@
 {
   "name": "zotero-wakatime",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "description": "WakaTime time tracking integration for Zotero",
   "config": {
     "addonName": "Zotero WakaTime",
