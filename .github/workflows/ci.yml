@@ -11,6 +11,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       GITHUB_TOKEN: ${{ secrets.GitHub_TOKEN }}
     steps:
@@ -21,6 +22,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       GITHUB_TOKEN: ${{ secrets.GitHub_TOKEN }}
     steps:
@@ -36,6 +38,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs:
       - build
     steps:
@@ -48,4 +51,12 @@ jobs:
             https://github.com/wakatime/wakatime-cli/releases/latest/download/wakatime-cli-linux-amd64.zip
           unzip -o /tmp/wakatime-cli.zip -d "$HOME/.wakatime"
           chmod +x "$HOME/.wakatime/wakatime-cli-linux-amd64"
-      - run: npm run test
+      - name: Seed WakaTime config
+        run: |
+          # With wakatime-cli installed the plugin asks for an API key on
+          # startup when ~/.wakatime.cfg has none. In a headless runner that
+          # modal dialog blocks the main thread forever, so pre-seed a dummy
+          # key (the tests never send heartbeats to the WakaTime API).
+          printf '[settings]\napi_key=00000000-0000-0000-0000-000000000000\n' > "$HOME/.wakatime.cfg"
+      - name: Run Tests
+        run: npm run test

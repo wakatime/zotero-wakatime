@@ -85,7 +85,27 @@ async function setApiKey(apiKey: string): Promise<void> {
   await IOUtils.writeUTF8(configPath, serializeConfig(config));
 }
 
+/**
+ * Whether nobody can answer a modal dialog (CI, Zotero's automated tests).
+ * `Services.prompt.prompt` blocks the main thread until the dialog is
+ * dismissed, which used to leave headless CI runs hanging until the job hit
+ * GitHub's 6 hour limit.
+ */
+function isUnattendedEnvironment(): boolean {
+  if ((Zotero as unknown as { automatedTest?: boolean }).automatedTest) {
+    return true;
+  }
+  try {
+    return Services.env.get("CI") === "true";
+  } catch {
+    // `Services.env` is unavailable on older Zotero builds.
+    return false;
+  }
+}
+
 async function promptForApiKeyIfNeeded(): Promise<void> {
+  if (isUnattendedEnvironment()) return;
+
   const apiKey = await getApiKey();
   if (apiKey) return;
 
