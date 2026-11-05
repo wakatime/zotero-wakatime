@@ -41,7 +41,7 @@
     "eslint": "^10.14.0",
     "mocha": "^11.7.6",
     "prettier": "3.9.10",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "zotero-plugin-scaffold": "^0.9.3",
     "zotero-types": "^4.1.3"
   },
