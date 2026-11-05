@@ -11,7 +11,7 @@ export default defineConfig({
     pkg.version.includes("-") ? "update-beta.json" : "update.json"
   }`,
   xpiDownloadLink:
-    "https://github.com/{{owner}}/{{repo}}/releases/download/v{{version}}/{{xpiName}}.xpi",
+    "https://github.com/{{owner}}/{{repo}}/releases/download/zotero-wakatime-v{{version}}/{{xpiName}}.xpi",
 
   build: {
     assets: ["addon/**/*.*"],
@@ -41,6 +41,15 @@ export default defineConfig({
 
   test: {
     waitForPlugin: `() => Zotero.${pkg.config.addonInstance}.data.initialized`,
+  },
+
+  // Release tags are prefixed (`zotero-wakatime-v0.2.2`) to match
+  // .github/workflows/release.yml and the xpiDownloadLink above. Keep this in
+  // sync with those two, otherwise update.json points at a 404.
+  release: {
+    bumpp: {
+      tag: "zotero-wakatime-v%s",
+    },
   },
 
   // If you need to see a more detailed log, uncomment the following line:
